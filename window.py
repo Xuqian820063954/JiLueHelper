@@ -104,4 +104,4 @@ class Ui_MainWindow(object):
 
     def show_version(self):
         message_box = MessageWidget.CcMsgBox()
-        message_box.about(caption="开发：无恒id\n版本号：v0.0.1", window_title="版本信息")
+        message_box.about(caption="开发：无恒id\n版本号：v1.0.1", window_title="版本信息")
