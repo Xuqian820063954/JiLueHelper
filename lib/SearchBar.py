@@ -15,25 +15,15 @@ class SearchBar:
         self.cb_search.setCurrentIndex(0)
         # 设置搜索框
         self.le_search = QLineEdit(central_widget)
-        self.le_search.setGeometry(QtCore.QRect(325, 50, 165, 30))
+        self.le_search.setGeometry(QtCore.QRect(325, 50, 195, 30))
         self.le_search.setClearButtonEnabled(True)
         self.le_search.setPlaceholderText("请输入武将名称，如刘备")
         # 保存无限制校验器
         self.validator = self.le_search.validator()
-        # 设置搜索按钮
-        self.btn_search = QPushButton(central_widget)
-        self.btn_search.setGeometry(QtCore.QRect(490, 50, 30, 30))
-        self.btn_search.setText("")
-        icon = QtGui.QIcon()
-        icon.addPixmap(QtGui.QPixmap("search.jpeg"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
-        self.btn_search.setIcon(icon)
-        self.btn_search.setIconSize(QtCore.QSize(25, 25))
-        self.btn_search.setFlat(True)
         # 绑定事件
         self.cb_search.currentIndexChanged.connect(self.set_search_limit)
         self.cb_search.currentIndexChanged.connect(self.search_skill)
         self.le_search.textEdited.connect(self.search_skill)
-        self.btn_search.pressed.connect(self.search_skill)
 
     def connect_skill_table(self, skill_table: SkillTable):
         self.skill_table = skill_table
