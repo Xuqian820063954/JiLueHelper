@@ -1,5 +1,7 @@
 # JiLueHelper
 
+This software is a tool for player of "SanGuoKill" to combine skills of Zuo You more conveniently.
+
 ## Table of Contents
 
 - [Requirements](#requirements)
