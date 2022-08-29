@@ -99,7 +99,8 @@ class Ui_MainWindow(object):
                "补充：\n" \
                "1、白色珠表示任意珠子，其他颜色与游戏相同。\n" \
                "2、红色文字表示技能无法通过成就获得。\n" \
-               "3、按照色链搜索时，需严格遵守”红黄绿蓝“顺序，\n未使用的颜色请用”0“填充。"
+               "3、按照色链搜索时，需严格遵守”红黄绿蓝“顺序，\n未使用的颜色请用”0“填充。\n" \
+               "4、如果需要增加技能或修改技能信息，请直接修改skill.xlsx文件"
         message_box.about(caption=text, window_title="使用说明")
 
     def show_version(self):
