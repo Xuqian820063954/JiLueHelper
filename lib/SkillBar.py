@@ -62,6 +62,13 @@ class SkillBar:
         self.btn_skills[4].clicked.connect(lambda: self.switch_button(4))
         self.btn_skills[5].clicked.connect(lambda: self.switch_button(5))
         self.btn_skills[6].clicked.connect(lambda: self.switch_button(6))
+        self.btn_skills[0].enterEvent = lambda e: self.switch_button_show(e, 0)
+        self.btn_skills[1].enterEvent = lambda e: self.switch_button_show(e, 1)
+        self.btn_skills[2].enterEvent = lambda e: self.switch_button_show(e, 2)
+        self.btn_skills[3].enterEvent = lambda e: self.switch_button_show(e, 3)
+        self.btn_skills[4].enterEvent = lambda e: self.switch_button_show(e, 4)
+        self.btn_skills[5].enterEvent = lambda e: self.switch_button_show(e, 5)
+        self.btn_skills[6].enterEvent = lambda e: self.switch_button_show(e, 6)
         # 设置当前选择的技能
         self.cur_button = -1
         # 设置清除当前按钮
@@ -92,7 +99,6 @@ class SkillBar:
         if self.cur_button != -1:
             self.btn_skills[self.cur_button].set_unselected()
         self.btn_skills[i].set_selected()
-        self.table.update_skill_description(self.btn_skills[i].index)
         # 若切换按钮，则更新技能列表
         flag = self.cur_button != i
         self.cur_button = i
@@ -101,6 +107,9 @@ class SkillBar:
             self.table.update_candidate_data(rest_colors, names, collision)
             self.table.update_show_data()
             self.table.update_items()
+
+    def switch_button_show(self, event, i):
+        self.table.update_skill_description(self.btn_skills[i].index)
 
     def clear(self):
         self.btn_skills[self.cur_button].clear()

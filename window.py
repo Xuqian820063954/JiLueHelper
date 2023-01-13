@@ -43,7 +43,7 @@ class Ui_MainWindow(object):
         self.tb_hero = QtWidgets.QTextBrowser(self.central_widget)
         self.tb_hero.setGeometry(QtCore.QRect(20, 400, 210, 90))
         self.tb_skill = QtWidgets.QTextBrowser(self.central_widget)
-        self.tb_skill.setGeometry(QtCore.QRect(240, 400, 280, 90))
+        self.tb_skill.setGeometry(QtCore.QRect(240, 350, 280, 140))
         MainWindow.setCentralWidget(self.central_widget)
 
         self.init_titles()
@@ -70,7 +70,7 @@ class Ui_MainWindow(object):
         self.label3 = TitleWidget.TitleLabel(self.central_widget, "刷珠武将")
         self.label3.setGeometry(QtCore.QRect(70, 360, 110, 30))
         self.label4 = TitleWidget.TitleLabel(self.central_widget, "技能描述")
-        self.label4.setGeometry(QtCore.QRect(310, 360, 140, 30))
+        self.label4.setGeometry(QtCore.QRect(310, 310, 140, 30))
 
     def init_skill_bar(self):
         self.skill_bar = SkillBar.SkillBar(self.central_widget)

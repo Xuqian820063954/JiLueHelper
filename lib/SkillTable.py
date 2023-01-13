@@ -22,10 +22,12 @@ class SkillItem(QTableWidgetItem):
 
 
 class SkillTable(QTableWidget):
+    itemExited = QtCore.pyqtSignal(QTableWidgetItem)
+
     def __init__(self, parent):
         super(SkillTable, self).__init__(parent)
         # 设置表的位置
-        self.setGeometry(QtCore.QRect(240, 90, 280, 260))
+        self.setGeometry(QtCore.QRect(240, 90, 280, 210))
         # 隐藏表头
         self.verticalHeader().hide()
         self.horizontalHeader().hide()
@@ -44,8 +46,35 @@ class SkillTable(QTableWidget):
         self.skill_bar = None
         self.skill_description = None
         # 设置事件
+        self.setMouseTracking(True)
         self.itemClicked.connect(self.update_skill_bar)
-        self.itemClicked.connect(lambda: self.update_skill_description(self.currentItem().index))
+
+        self._last_index = QtCore.QPersistentModelIndex()
+        self.viewport().installEventFilter(self)
+        self.itemEntered.connect(self.update_skill_description)
+        self.itemExited.connect(self.handleItemExited)
+
+    def handleItemEntered(self, item):
+        item.setBackground(QColor('moccasin'))
+
+    def handleItemExited(self, item):
+        item.setBackground(QTableWidgetItem().background())
+
+    def eventFilter(self, widget, event):
+        # if widget is self.viewport():
+        index = self._last_index
+        if event.type() == QtCore.QEvent.MouseMove:
+            index = self.indexAt(event.pos())
+        elif event.type() == QtCore.QEvent.Wheel:
+            index = self.indexAt(event.pos())
+        if index != self._last_index:
+            row = self._last_index.row()
+            column = self._last_index.column()
+            item = self.item(row, column)
+            if item is not None:
+                self.itemExited.emit(item)
+            self._last_index = QtCore.QPersistentModelIndex(index)
+        return QTableWidget.eventFilter(self, widget, event)
 
     def connect_skill_bar(self, skill_bar):
         self.skill_bar = skill_bar
@@ -59,7 +88,13 @@ class SkillTable(QTableWidget):
         for i, index in enumerate(self.show_data):
             self.setItem(i // 3, i % 3, SkillItem(index))
 
-    def update_skill_description(self, index):
+    def update_skill_description(self, item):
+        index = -1
+        if type(item) is int:
+            index = item
+        else:
+            index = item.index
+            item.setBackground(QColor('moccasin'))
         if index == -1:
             self.skill_description.setText("")
             return
