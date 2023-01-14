@@ -12,12 +12,15 @@ class SkillItem(QTableWidgetItem):
     def __init__(self, index):
         super(SkillItem, self).__init__()
         self.index = index
-        self.setText(config.data[index][1])
+        if config.data_type == 'hero':
+            self.setText(config.data_hero[index][1])
+        elif config.data_type == 'zuoyou':
+            self.setText(config.data_zuoyou[index][1])
         self.setTextAlignment(QtCore.Qt.AlignCenter)
         # 非成就武将技能字体设红
-        if config.data[index][7] == 0:
+        if config.data_hero[index][7] == 0:
             self.setForeground(QColor(255, 0, 0))
-        elif config.data[index][7] == 2:
+        elif config.data_hero[index][7] == 2:
             self.setForeground(QColor(0, 0, 255))
         else:
             self.setForeground(QColor(0, 0, 0))
@@ -29,7 +32,7 @@ class SkillTable(QTableWidget):
     def __init__(self, parent):
         super(SkillTable, self).__init__(parent)
         # 设置表的位置
-        self.setGeometry(QtCore.QRect(240, 90, 280, 210))
+        self.setGeometry(QtCore.QRect(310, 90, 280, 210))
         # 隐藏表头
         self.verticalHeader().hide()
         self.horizontalHeader().hide()
@@ -41,8 +44,8 @@ class SkillTable(QTableWidget):
         self.setColumnWidth(1, 86)
         self.setColumnWidth(2, 86)
         # 导入数据
-        self.candidate_data = list(range(config.data.shape[0]))
-        self.show_data = list(range(config.data.shape[0]))
+        self.candidate_data = list(range(config.data_hero.shape[0]))
+        self.show_data = list(range(config.data_hero.shape[0]))
         self.update_items()
         # 关联变量
         self.skill_bar = None
@@ -90,7 +93,7 @@ class SkillTable(QTableWidget):
         for i, index in enumerate(self.show_data):
             self.setItem(i // 3, i % 3, SkillItem(index))
 
-    def update_skill_description(self, item):
+    def update_skill_description(self, item, source=""):
         index = -1
         if type(item) is int:
             index = item
@@ -100,18 +103,27 @@ class SkillTable(QTableWidget):
         if index == -1:
             self.skill_description.setText("")
             return
-        # 武将说明
-        hero = "武将：" + config.data[index][0] + "   "
-        # 色链说明
-        color = "色链：" + str(config.data[index][2]) + "红" + str(config.data[index][3]) + "黄" + \
-                str(config.data[index][4]) + "绿" + str(config.data[index][5]) + "蓝"
-        # 冲突技能说明
-        collision = ""
-        if config.data[index][6] != "无":
-            collision = "\n冲突技能：" + config.data[index][6]
-        # 技能描述
-        description = "\n技能描述：" + config.data[index][8]
-        self.skill_description.setText(hero + color + description + collision)
+        if source == "":
+            source = config.data_type
+        if source == 'hero':
+            # 武将说明
+            hero = "武将：" + config.data_hero[index][0] + "   "
+            # 色链说明
+            color = "色链：" + str(config.data_hero[index][2]) + "红" + str(config.data_hero[index][3]) + "黄" + \
+                    str(config.data_hero[index][4]) + "绿" + str(config.data_hero[index][5]) + "蓝"
+            # 冲突技能说明
+            collision = ""
+            if config.data_hero[index][6] != "无":
+                collision = "\n冲突技能：" + config.data_hero[index][6]
+            # 技能描述
+            description = "\n技能描述：" + config.data_hero[index][8]
+            self.skill_description.setText(hero + color + description + collision)
+        else:
+            # 武将说明
+            hero = "皮肤：" + config.data_zuoyou[index][0] + "\n"
+            # 技能描述
+            description = "\n技能描述：" + config.data_zuoyou[index][2]
+            self.skill_description.setText(hero + description)
 
     def update_skill_bar(self):
         if self.skill_bar.cur_button != -1:
@@ -119,18 +131,22 @@ class SkillTable(QTableWidget):
             self.skill_bar.update()
         # self.button_platte.switch_button(self.button_platte.cur_button + 1)
 
-    def update_candidate_data(self, rest_colors, names, collision):
+    def update_candidate_data(self, rest_colors, names, collision, source='hero'):
         self.candidate_data.clear()
+        if source == 'zuoyou':
+            for i in range(config.data_zuoyou.shape[0]):
+                self.candidate_data.append(i)
+            return
         if config.check_color_mode(rest_colors) == 2210 and len(names) == 6:
             return
-        for i in range(config.data.shape[0]):
+        for i in range(config.data_hero.shape[0]):
             # 过滤冲突技能和已有的技能
-            if config.data[i][1] in names or config.data[i][1] in collision:
+            if config.data_hero[i][1] in names or config.data_hero[i][1] in collision:
                 continue
             # 计算加入新技能后的色链需求
             predict_colors = np.array([0, 0, 0, 0])
             for j in range(4):
-                predict_colors[j] = max(rest_colors[j], config.data[i][j + 2])
+                predict_colors[j] = max(rest_colors[j], config.data_hero[i][j + 2])
             # 如果存在色谱满足色链需求，则更新候选技能列表
             predict_color_mode = config.check_color_mode(predict_colors)
             if not (predict_color_mode == "X" or (len(names) == 6 and predict_color_mode == 2210)):
@@ -142,20 +158,36 @@ class SkillTable(QTableWidget):
             self.show_data = self.candidate_data.copy()
             return
         self.show_data.clear()
-        for index in self.candidate_data:
-            # 按武将搜索
-            if config.search_mode == 0 and config.search_text in config.data[index][0]:
-                self.show_data.append(index)
-            # 按技能名称搜索
-            if config.search_mode == 1 and config.search_text in config.data[index][1]:
-                self.show_data.append(index)
-            # 按色链需求搜索
-            if config.search_mode == 2:
-                color = [0, 0, 0, 0]
-                for i in range(min(len(config.search_text), 4)):
-                    color[i] = max(color[i], int(config.search_text[i]))
-                if config.data[index][2] <= color[0] and config.data[index][3] <= color[1] and \
-                        config.data[index][4] <= color[2] and config.data[index][5] <= color[3]:
+        if config.data_type == 'hero':
+            for index in self.candidate_data:
+                # 按武将搜索
+                if config.search_mode == 0 and config.search_text in config.data_hero[index][0]:
                     self.show_data.append(index)
-            if config.search_mode == 3 and config.search_text in config.data[index][8]:
-                self.show_data.append(index)
+                # 按技能名称搜索
+                if config.search_mode == 1 and config.search_text in config.data_hero[index][1]:
+                    self.show_data.append(index)
+                # 按色链需求搜索
+                if config.search_mode == 2:
+                    color = [0, 0, 0, 0]
+                    for i in range(min(len(config.search_text), 4)):
+                        color[i] = max(color[i], int(config.search_text[i]))
+                    if config.data_hero[index][2] <= color[0] and config.data_hero[index][3] <= color[1] and \
+                            config.data_hero[index][4] <= color[2] and config.data_hero[index][5] <= color[3]:
+                        self.show_data.append(index)
+                # 按技能描述搜索
+                if config.search_mode == 3 and config.search_text in config.data_hero[index][8]:
+                    self.show_data.append(index)
+        else:
+            for index in self.candidate_data:
+                # 按武将搜索
+                if config.search_mode == 0 and config.search_text in config.data_zuoyou[index][0]:
+                    self.show_data.append(index)
+                # 按技能名称搜索
+                if config.search_mode == 1 and config.search_text in config.data_zuoyou[index][1]:
+                    self.show_data.append(index)
+                # 按色链需求搜索
+                if config.search_mode == 2:
+                    self.show_data.append(index)
+                # 按技能描述搜索
+                if config.search_mode == 3 and config.search_text in config.data_zuoyou[index][2]:
+                    self.show_data.append(index)

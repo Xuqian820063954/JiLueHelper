@@ -58,6 +58,8 @@ color_list = {
               "stop:0.75 rgb(0,0,255)" +
               "stop:1 rgb(255,0,0))"
 }
-data = []
+data_hero = []
+data_zuoyou = []
+data_type = 'hero'
 search_mode = 0
 search_text = ""

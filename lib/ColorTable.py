@@ -11,7 +11,7 @@ class ColorTable:
         for i in range(9):
             label = QLabel(central_widget)
             label.setText("")
-            label.setGeometry(QtCore.QRect(30 + 70 * (i % 3), 190 + 60 * (i // 3), 40, 40))
+            label.setGeometry(QtCore.QRect(65 + 70 * (i % 3), 190 + 60 * (i // 3), 40, 40))
             label.setStyleSheet(shape_style + color_list["grey"])
             self.items.append(label)
 

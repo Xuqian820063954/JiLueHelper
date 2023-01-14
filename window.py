@@ -18,7 +18,7 @@ class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setWindowTitle("极略三国辅助工具")
         MainWindow.setWindowIcon(QtGui.QIcon(r'source/window_icon.jpeg'))
-        MainWindow.setFixedSize(540, 540)
+        MainWindow.setFixedSize(610, 540)
         self.main_window = MainWindow
         # 菜单栏
         self.menu_bar = QtWidgets.QStatusBar(MainWindow)
@@ -41,9 +41,9 @@ class Ui_MainWindow(object):
         self.central_widget = QtWidgets.QWidget(MainWindow)
 
         self.tb_hero = QtWidgets.QTextBrowser(self.central_widget)
-        self.tb_hero.setGeometry(QtCore.QRect(20, 400, 210, 90))
+        self.tb_hero.setGeometry(QtCore.QRect(20, 400, 280, 90))
         self.tb_skill = QtWidgets.QTextBrowser(self.central_widget)
-        self.tb_skill.setGeometry(QtCore.QRect(240, 350, 280, 140))
+        self.tb_skill.setGeometry(QtCore.QRect(310, 350, 280, 140))
         MainWindow.setCentralWidget(self.central_widget)
 
         self.init_titles()
@@ -64,13 +64,13 @@ class Ui_MainWindow(object):
     def init_titles(self):
         # 设置各模块标题
         self.label1 = TitleWidget.TitleLabel(self.central_widget, "配置技能")
-        self.label1.setGeometry(QtCore.QRect(70, 10, 110, 30))
+        self.label1.setGeometry(QtCore.QRect(105, 10, 110, 30))
         self.label2 = TitleWidget.TitleLabel(self.central_widget, "可搭配技能")
-        self.label2.setGeometry(QtCore.QRect(310, 10, 140, 30))
+        self.label2.setGeometry(QtCore.QRect(380, 10, 140, 30))
         self.label3 = TitleWidget.TitleLabel(self.central_widget, "刷珠武将")
-        self.label3.setGeometry(QtCore.QRect(70, 360, 110, 30))
+        self.label3.setGeometry(QtCore.QRect(105, 360, 110, 30))
         self.label4 = TitleWidget.TitleLabel(self.central_widget, "技能描述")
-        self.label4.setGeometry(QtCore.QRect(310, 310, 140, 30))
+        self.label4.setGeometry(QtCore.QRect(380, 310, 140, 30))
 
     def init_skill_bar(self):
         self.skill_bar = SkillBar.SkillBar(self.central_widget)
@@ -86,7 +86,8 @@ class Ui_MainWindow(object):
 
     def init_skill_table(self):
         # 设置可搭配技能列表
-        config.data = DataLoader.load_data('source/skill.xlsx')
+        config.data_hero = DataLoader.load_data('source/skill.xlsx', "武将技能")
+        config.data_zuoyou = DataLoader.load_data('source/skill.xlsx', "左幽技能")
         self.skill_table = SkillTable.SkillTable(self.central_widget)
 
     def show_help(self):

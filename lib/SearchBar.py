@@ -10,12 +10,12 @@ class SearchBar:
     def __init__(self, central_widget):
         # 设置搜索范围
         self.cb_search = QComboBox(central_widget)
-        self.cb_search.setGeometry(QtCore.QRect(240, 50, 85, 30))
+        self.cb_search.setGeometry(QtCore.QRect(310, 50, 85, 30))
         self.cb_search.addItems(["按武将搜索", "按技能搜索", "按色链搜索", "按描述搜索"])
         self.cb_search.setCurrentIndex(0)
         # 设置搜索框
         self.le_search = QLineEdit(central_widget)
-        self.le_search.setGeometry(QtCore.QRect(325, 50, 195, 30))
+        self.le_search.setGeometry(QtCore.QRect(395, 50, 195, 30))
         self.le_search.setClearButtonEnabled(True)
         self.le_search.setPlaceholderText("请输入武将名称，如刘备")
         # 保存无限制校验器

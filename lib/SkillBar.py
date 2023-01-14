@@ -11,32 +11,48 @@ import config
 
 
 class SkillBarItem(QPushButton):
-    def __init__(self, central_widget):
+    def __init__(self, central_widget, is_skin):
         super(SkillBarItem, self).__init__(central_widget)
         self.index = config.empty_skill
         self.setText("")
-        self.background = ""
+        self.is_skin = is_skin
+        if is_skin:
+            self.background = "background:rgb(150,0,150);"
+        else:
+            self.background = ""
         self.foreground = ""
         self.__set_style()
 
     def set_data(self, index):
         self.index = index
-        self.setText(config.data[index][1])
-        if config.data[index][7] == 0:
-            self.foreground = "color:rgb(255,0,0);"
-        elif config.data[index][7] == 2:
-            self.foreground = 'color:rgb(0,0,255);'
+        if config.data_type == 'hero':
+            self.setText(config.data_hero[index][1])
+            if config.data_hero[index][7] == 0:
+                self.foreground = "color:rgb(255,0,0);"
+            elif config.data_hero[index][7] == 2:
+                self.foreground = 'color:rgb(0,0,255);'
+            else:
+                self.foreground = ""
         else:
-            self.foreground = ""
+            self.setText(config.data_zuoyou[index][1])
+            self.foreground = "color:rgb(255,255,255);"
+            self.background = 'background:rgb(200,0,200);'
+
         self.__set_style()
 
     def set_selected(self):
-        self.background = "background:rgb(200,200,200);"
+        if self.is_skin:
+            self.background = "background:rgb(200,0,200);"
+        else:
+            self.background = "background:rgb(200,200,200);"
         self.__set_style()
         self.setChecked(True)
 
     def set_unselected(self):
-        self.background = ""
+        if self.is_skin:
+            self.background = "background:rgb(150,0,150);"
+        else:
+            self.background = ""
         self.__set_style()
         self.setChecked(False)
 
@@ -52,9 +68,12 @@ class SkillBar:
     def __init__(self, central_widget):
         # 设置配置技能列表
         self.btn_skills = []
-        for i in range(7):
-            btn = SkillBarItem(central_widget)
-            btn.setGeometry(QtCore.QRect(20 + 70 * (i % 3), 50 + 30 * (i // 3), 70, 30))
+        for i in range(8):
+            if i != 7:
+                btn = SkillBarItem(central_widget, False)
+            else:
+                btn = SkillBarItem(central_widget, True)
+            btn.setGeometry(QtCore.QRect(20 + 70 * (i % 4), 50 + 30 * (i // 4), 70, 30))
             self.btn_skills.append(btn)
         # 连接槽函数
         self.btn_skills[0].clicked.connect(lambda: self.switch_button(0))
@@ -64,6 +83,7 @@ class SkillBar:
         self.btn_skills[4].clicked.connect(lambda: self.switch_button(4))
         self.btn_skills[5].clicked.connect(lambda: self.switch_button(5))
         self.btn_skills[6].clicked.connect(lambda: self.switch_button(6))
+        self.btn_skills[7].clicked.connect(lambda: self.switch_button(7))
         self.btn_skills[0].enterEvent = lambda e: self.switch_button_show(e, 0)
         self.btn_skills[1].enterEvent = lambda e: self.switch_button_show(e, 1)
         self.btn_skills[2].enterEvent = lambda e: self.switch_button_show(e, 2)
@@ -71,6 +91,7 @@ class SkillBar:
         self.btn_skills[4].enterEvent = lambda e: self.switch_button_show(e, 4)
         self.btn_skills[5].enterEvent = lambda e: self.switch_button_show(e, 5)
         self.btn_skills[6].enterEvent = lambda e: self.switch_button_show(e, 6)
+        self.btn_skills[7].enterEvent = lambda e: self.switch_button_show(e, 7)
         # 设置当前选择的技能
         self.cur_button = -1
         # 设置清除当前按钮
@@ -105,13 +126,21 @@ class SkillBar:
         flag = self.cur_button != i
         self.cur_button = i
         if flag:
-            rest_colors, names, collision = self.get_rest_colors()
-            self.table.update_candidate_data(rest_colors, names, collision)
-            self.table.update_show_data()
-            self.table.update_items()
+            if i != 7:
+                rest_colors, names, collision = self.get_rest_colors()
+                config.data_type = 'hero'
+                self.table.update_candidate_data(rest_colors, names, collision, config.data_type)
+                self.table.update_show_data()
+                self.table.update_items()
+            else:
+                config.data_type = 'zuoyou'
+                self.table.update_candidate_data(None, None, None, config.data_type)
+                self.table.update_show_data()
+                self.table.update_items()
 
     def switch_button_show(self, event, i):
-        self.table.update_skill_description(self.btn_skills[i].index)
+        data_type = 'hero' if i != 7 else 'zuoyou'
+        self.table.update_skill_description(self.btn_skills[i].index, data_type)
 
     def clear(self):
         self.btn_skills[self.cur_button].clear()
@@ -122,7 +151,7 @@ class SkillBar:
         for item in self.btn_skills:
             item.clear()
         self.update()
-        self.table.update_candidate_data(np.array([0, 0, 0, 0]), set(), set())
+        self.table.update_candidate_data(np.array([0, 0, 0, 0]), set(), set(), config.data_type)
         self.table.update_show_data()
         self.table.update_items()
         self.table.update_skill_description(config.empty_skill)
@@ -132,11 +161,12 @@ class SkillBar:
         colors = np.array([0, 0, 0, 0])
         heros = set()
         count = 0
-        for item in self.btn_skills:
-            if item.index == config.empty_skill:
+        for index in range(len(self.btn_skills) - 1):
+            item = self.btn_skills[index]
+            if item.index == config.empty_skill or item.index == 7:
                 continue
             count += 1
-            data_item = config.data[item.index]
+            data_item = config.data_hero[item.index]
             # 武将不为空且为成就武将
             if data_item[0] != "" and data_item[7] == 1:
                 heros.add(data_item[0])
@@ -162,7 +192,7 @@ class SkillBar:
         collision = set()
         for i in range(7):
             if i != self.cur_button and self.btn_skills[i].index != config.empty_skill:
-                data_item = config.data[self.btn_skills[i].index]
+                data_item = config.data_hero[self.btn_skills[i].index]
                 names.add(data_item[1])
                 if type(data_item[6]) != "无":
                     collision_skills = set(re.findall(r'.{%d}' % 2, data_item[6]))
