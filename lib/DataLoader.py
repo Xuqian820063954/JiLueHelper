@@ -1,6 +1,6 @@
 import pandas as pd
 
 
-def load_data(path):
-    fm = pd.read_excel(path, sheet_name='Sheet1')
+def load_data(path, sheet_name='Sheet1'):
+    fm = pd.read_excel(path, sheet_name=sheet_name)
     return fm.values

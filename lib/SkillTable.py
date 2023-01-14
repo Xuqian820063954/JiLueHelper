@@ -17,6 +17,8 @@ class SkillItem(QTableWidgetItem):
         # 非成就武将技能字体设红
         if config.data[index][7] == 0:
             self.setForeground(QColor(255, 0, 0))
+        elif config.data[index][7] == 2:
+            self.setForeground(QColor(0, 0, 255))
         else:
             self.setForeground(QColor(0, 0, 0))
 

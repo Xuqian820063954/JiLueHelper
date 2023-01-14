@@ -24,6 +24,8 @@ class SkillBarItem(QPushButton):
         self.setText(config.data[index][1])
         if config.data[index][7] == 0:
             self.foreground = "color:rgb(255,0,0);"
+        elif config.data[index][7] == 2:
+            self.foreground = 'color:rgb(0,0,255);'
         else:
             self.foreground = ""
         self.__set_style()
