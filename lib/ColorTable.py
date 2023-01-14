@@ -81,7 +81,7 @@ class ColorTable:
 
     def __set_1110(self, color1, color2, color3):
         self.items[0].setStyleSheet(shape_style + color_list[color1])
-        self.items[1].setStyleSheet(shape_style + color_list["white"])
+        self.items[1].setStyleSheet(shape_style + color_list["colour"])
         self.items[2].setStyleSheet(shape_style + color_list["white"])
         self.items[3].setStyleSheet(shape_style + color_list[color2])
         self.items[4].setStyleSheet(shape_style + color_list["colour"])
