@@ -19,11 +19,11 @@ class SkillItem(QTableWidgetItem):
         self.setTextAlignment(QtCore.Qt.AlignCenter)
         # 非成就武将技能字体设红
         if config.data_hero[index][7] == 0:
-            self.setForeground(QColor(255, 0, 0))
-        elif config.data_hero[index][7] == 2:
+            self.setForeground(QColor(0, 0, 0))
+        elif config.data_hero[index][7] == 1:
             self.setForeground(QColor(0, 0, 255))
         else:
-            self.setForeground(QColor(0, 0, 0))
+            self.setForeground(QColor(255, 0, 0))
 
 
 class SkillTable(QTableWidget):
@@ -140,8 +140,10 @@ class SkillTable(QTableWidget):
         if config.check_color_mode(rest_colors) == 2210 and len(names) == 6:
             return
         for i in range(config.data_hero.shape[0]):
+            if config.data_hero[i][1] in names:
+                continue
             # 过滤冲突技能和已有的技能
-            if config.data_hero[i][1] in names or config.data_hero[i][1] in collision:
+            if config.enable_collision and config.data_hero[i][1] in collision:
                 continue
             # 计算加入新技能后的色链需求
             predict_colors = np.array([0, 0, 0, 0])

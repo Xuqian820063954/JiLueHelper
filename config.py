@@ -36,12 +36,13 @@ def check_color_mode(colors):
 
 
 empty_skill = -1
-shape_style = "min-width:40px;\n" \
-              "min-height:40px;\n" \
-              "max-width:40px;\n" \
-              "max-height:40px;\n" \
-              "border-radius:20px;\n" \
+shape_style = "min-width:60px;\n" \
+              "min-height:60px;\n" \
+              "max-width:60px;\n" \
+              "max-height:60px;\n" \
+              "border-radius:30px;\n" \
               "border:1px solid black;\n" \
+              "font-size:14px;\n" \
               "background:"
 background_style = "background-color:"
 color_list = {
@@ -63,3 +64,6 @@ data_zuoyou = []
 data_type = 'hero'
 search_mode = 0
 search_text = ""
+
+enable_collision = True
+show_skill = True

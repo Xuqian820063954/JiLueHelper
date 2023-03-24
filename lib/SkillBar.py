@@ -28,11 +28,11 @@ class SkillBarItem(QPushButton):
         if config.data_type == 'hero':
             self.setText(config.data_hero[index][1])
             if config.data_hero[index][7] == 0:
-                self.foreground = "color:rgb(255,0,0);"
-            elif config.data_hero[index][7] == 2:
+                self.foreground = ""
+            elif config.data_hero[index][7] == 1:
                 self.foreground = 'color:rgb(0,0,255);'
             else:
-                self.foreground = ""
+                self.foreground = "color:rgb(255,0,0);"
         else:
             self.setText(config.data_zuoyou[index][1])
             self.foreground = "color:rgb(255,255,255);"
@@ -161,9 +161,10 @@ class SkillBar:
         colors = np.array([0, 0, 0, 0])
         heros = set()
         count = 0
+        skills = []
         for index in range(len(self.btn_skills) - 1):
             item = self.btn_skills[index]
-            if item.index == config.empty_skill or item.index == 7:
+            if item.index == config.empty_skill:
                 continue
             count += 1
             data_item = config.data_hero[item.index]
@@ -173,10 +174,12 @@ class SkillBar:
             # 更新色链
             for i in range(4):
                 colors[i] = max(colors[i], data_item[i + 2])
+            # 更新技能集合
+            skills.append((data_item[1], data_item[4]))
         # 更新色链需求
         self.color_bar.update(colors)
         # 更新色链表
-        self.color_table.update(colors, count)
+        self.color_table.update(colors, skills)
         # 更新武将说明
         heros = list(heros)
         heros.sort()

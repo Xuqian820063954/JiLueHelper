@@ -23,16 +23,38 @@ class Ui_MainWindow(object):
         # 菜单栏
         self.menu_bar = QtWidgets.QStatusBar(MainWindow)
         bar = MainWindow.menuBar()
-        help = bar.addMenu("帮助")
 
+        setting = bar.addMenu("设置")
+        action_collision = QtWidgets.QAction("技能禁配", MainWindow)
+        action_collision.setStatusTip("开启后冲突技能将不会显示在列表中")
+        action_collision.setCheckable(True)
+        action_collision.setChecked(True)
+        action_collision.triggered.connect(self.enable_collision)
+        setting.addAction(action_collision)
+        action_show_skill = QtWidgets.QAction("显示技能", MainWindow)
+        action_show_skill.setStatusTip("开启后灵珠显示技能与点数")
+        action_show_skill.setCheckable(True)
+        action_show_skill.setChecked(True)
+        action_show_skill.triggered.connect(self.enable_show_skill)
+        setting.addAction(action_show_skill)
+
+        help = bar.addMenu("帮助")
         action_help = QtWidgets.QAction("介绍", MainWindow)
         action_help.setStatusTip("显示软件介绍")
-        help.addAction(action_help)
         action_help.triggered.connect(self.show_help)
+        help.addAction(action_help)
         action_version = QtWidgets.QAction("版本号", MainWindow)
         action_version.setStatusTip("显示软件版本信息")
         action_version.triggered.connect(self.show_version)
         help.addAction(action_version)
+
+        mode = bar.addMenu("模式")
+        action_design = QtWidgets.QAction("设计模式", MainWindow)
+        action_design.setStatusTip("根据技能设计新套装")
+        mode.addAction(action_design)
+        action_compound = QtWidgets.QAction("合成模式", MainWindow)
+        action_compound.setStatusTip("根据已有灵珠规划合珠路线")
+        mode.addAction(action_compound)
 
         # 状态栏
         self.statusBar = QtWidgets.QStatusBar(MainWindow)
@@ -41,7 +63,7 @@ class Ui_MainWindow(object):
         self.central_widget = QtWidgets.QWidget(MainWindow)
 
         self.tb_hero = QtWidgets.QTextBrowser(self.central_widget)
-        self.tb_hero.setGeometry(QtCore.QRect(20, 400, 280, 90))
+        self.tb_hero.setGeometry(QtCore.QRect(20, 430, 280, 60))
         self.tb_skill = QtWidgets.QTextBrowser(self.central_widget)
         self.tb_skill.setGeometry(QtCore.QRect(310, 350, 280, 140))
         MainWindow.setCentralWidget(self.central_widget)
@@ -68,7 +90,7 @@ class Ui_MainWindow(object):
         self.label2 = TitleWidget.TitleLabel(self.central_widget, "可搭配技能")
         self.label2.setGeometry(QtCore.QRect(380, 10, 140, 30))
         self.label3 = TitleWidget.TitleLabel(self.central_widget, "刷珠武将")
-        self.label3.setGeometry(QtCore.QRect(105, 360, 110, 30))
+        self.label3.setGeometry(QtCore.QRect(105, 390, 110, 30))
         self.label4 = TitleWidget.TitleLabel(self.central_widget, "技能描述")
         self.label4.setGeometry(QtCore.QRect(380, 310, 140, 30))
 
@@ -107,3 +129,24 @@ class Ui_MainWindow(object):
     def show_version(self):
         message_box = MessageWidget.CcMsgBox()
         message_box.about(caption="开发：无恒id\n版本号：v1.0.1", window_title="版本信息")
+
+    def enable_collision(self):
+        config.enable_collision = not config.enable_collision
+        if self.skill_bar.cur_button != 7:
+            rest_colors, names, collision = self.skill_bar.get_rest_colors()
+            config.data_type = 'hero'
+            self.skill_table.update_candidate_data(rest_colors, names, collision, config.data_type)
+            self.skill_table.update_show_data()
+            self.skill_table.update_items()
+        else:
+            config.data_type = 'zuoyou'
+            self.skill_table.update_candidate_data(None, None, None, config.data_type)
+            self.skill_table.update_show_data()
+            self.skill_table.update_items()
+
+    def enable_show_skill(self):
+        config.show_skill = not config.show_skill
+        if config.show_skill:
+            self.color_table.visible_texts()
+        else:
+            self.color_table.unvisible_texts()
